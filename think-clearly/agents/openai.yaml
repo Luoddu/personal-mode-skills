@@ -1,0 +1,6 @@
+interface:
+  display_name: "澄清模式 · 独立思考"
+  short_description: "逐问澄清真实需求、检验前提与方案；明确启动或发现模糊时先邀请"
+  default_prompt: "澄清模式：请用 $think-clearly 帮我逐问澄清下面的想法，检验前提和替代方案，并给出有依据的判断。"
+policy:
+  allow_implicit_invocation: true
