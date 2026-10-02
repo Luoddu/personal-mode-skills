@@ -1,0 +1,6 @@
+interface:
+  display_name: "呈现模式 · 自然与书面表达"
+  short_description: "沿着你的观点凝练成稿，逐步调整自然与书面程度，必要提醒放在段外"
+  default_prompt: "呈现模式：请用 $present-clearly 沿着我的观点整理成一段清楚的文字，保留我的立场；根据我的要求调整自然或书面程度，必要提醒放在段外。"
+policy:
+  allow_implicit_invocation: true
