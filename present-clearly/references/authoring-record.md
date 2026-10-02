@@ -50,7 +50,7 @@
 
 - **原生格式与发现：已验证。** Codex CLI 0.159.2 的短时 stdio app-server 仅执行 `initialize`、`initialized`、`skills/list`。个人 Skill 目录与独立仓库目录两个 cwd 均只发现一个 `present-clearly`，均为 `scope: user`、`enabled: true`，目标错误列表为空；中文 UI 名称、简介及包含 `$present-clearly` 的默认提示正确。服务器正常退出，退出码 0。没有 `thread/start`、`turn/start` 或额外模型调用。
 - **编码与副本：已验证。** 三个 Skill 文件以严格 UTF-8 解码，无 BOM、CR 或替换字符；引用的本地文件存在，个人安装与待提交副本逐字节相同。原始检查输出留在 checkout 的 Git 本机管理目录，不公开用户路径或其他 Skill 清单。
-- **Python 校验器限制：已确认。** 当前 Python 的 `import yaml` 返回 `ModuleNotFoundError`，与既有作者记录一致；因此未重复执行依赖 PyYAML 的 quick validator，也未安装依赖。用 Codex 原生解析作为格式与发现证据，不声称 Python 校验器通过。
+- **创建时的 Python 校验器限制：历史事实。** 初次创建时 Python 的 `import yaml` 返回 `ModuleNotFoundError`，与既有作者记录一致；当时未重复执行依赖 PyYAML 的 quick validator，也未安装依赖，采用 Codex 原生解析作为格式与发现证据。用户随后授权补齐依赖，当前官方 Python 校验结果见下方补齐记录。
 - **作者场景审阅：已完成，非独立模型行为评测。** 逐项核对上述七组正反约束，并使用下列实际成稿检查表达程度及段外提醒。口令规则仍是模型指令，不是确定性的关键词 hook；跨会话效果和不同模型的长期可靠性尚未验证。
 - **发布内容边界：已审阅。** 仅三个新 Skill 文件与 README 使用说明；不发布私人对话原文、机器路径、凭证、个人配置、原有 Skill 作者记录或本机 Git guard。提交通过显式路径 task-commit 完成工作树预扫、staged 二次扫描及消息检查。最终上传结果以 GitHub commit 与远端回读为准。
 
@@ -73,3 +73,12 @@
 **引用与退出的审阅：** “解释‘呈现模式，书面一点：’是什么意思”应解释用法；“退出呈现模式”应结束当前模式。已核对规则支持这两项，尚未做独立会话回放，不将静态审阅写成行为实测通过。
 
 Learning 判断：`none`。本次是已确认个人写作协议的首版落地，尚无多次真实使用验证的新工程教训；不修改其他项目的 Learning 文档。
+
+## 校验依赖补齐（2026-10-02）
+
+- 授权补充：用户明确允许按需安装 PyYAML。写集增加当前 Python 的用户级 site-packages；Skill 正文及 UI 配置保持不变，只更新本记录及仓库副本。
+- 四处复核：① Python 3.13.3 的 `yaml` 导入缺失，pip 25.0.1 已存在；② 固定 PyYAML 6.0.3 官方发行物和同 tag README，MIT 许可证，Python >=3.8，有 CPython 3.13 Windows x64 wheel；③ 复用现有 quick_validate.py，不修改校验器或安装其他依赖；④ 复用本任务此前原生解析与发现记录，新增官方 Python 校验结果，不扩大到其他 Skill。
+- 官方来源：[PyPI 6.0.3](https://pypi.org/project/PyYAML/6.0.3/)、[同版本 README](https://github.com/yaml/pyyaml/blob/6.0.3/README.md)，固定 tag 原文第 23–25 行展示 `yaml.safe_load`，第 46–53 行说明 MIT 许可证。采用原生 pip 安装官方 wheel，以官方发行元数据冻结 `pyyaml-6.0.3-cp313-cp313-win_amd64.whl`，SHA-256 为 `79005a0d97d5ddabfeeea4cf676af11e647e41d81c9a7722a193022accdb6b7c`；只安装匹配的二进制 wheel，强制 hash，不升级 pip 或安装其他包。
+- 验收：当前 Python 能导入固定版本并解析 Skill 的合法 YAML；非法 YAML 仍被拒绝；官方 quick validator 对个人安装与仓库副本均通过。场景行为评测的边界保持不变。
+- 回滚：若需撤销，仅用同一 Python 卸载本次用户级 PyYAML；原生发现检查仍可使用。此次不创建新的工程 Learning 条目，因为该缺依赖现象与恢复路径已有证据，未形成新的跨任务教训。
+- **当前结果：已验证。** `python -m pip install --user --index-url https://pypi.org/simple --only-binary=:all: --no-deps --require-hashes` 配合固定版本/hash requirements 安装成功；`yaml.__version__` 为 `6.0.3`。合法映射与列表经 `yaml.safe_load` 解析正确，缺少闭合括号的 YAML 抛出 `yaml.YAMLError`。`python -X utf8 quick_validate.py <个人 Skill 目录>` 与同命令的仓库副本均返回 `Skill is valid!`、退出码 0。Skill 正文和 UI 元数据未变，未把格式验证升级为独立行为评测。
